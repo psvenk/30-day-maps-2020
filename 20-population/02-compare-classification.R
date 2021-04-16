@@ -7,7 +7,7 @@ library(ggnewscale)
 options(tigris_use_cache = TRUE)
 
 # This can be a state name or abbreviation
-state <- "CA"
+state <- "MA"
 
 # use_zip("https://www.huduser.gov/portal/sites/default/files/zip/UPSAI_050820.zip", destdir = "20-population")
 
@@ -44,6 +44,9 @@ state_tracts_class <- state_tracts %>%
     suburban_cat = cut(x = upsai_suburban, breaks = c(0, .6, .85, 1)),
     rural_cat = cut(x = upsai_rural, breaks = c(0, .6, .85, 1)))
 
+roads <- primary_secondary_roads(state = state) %>%
+  subset(FULLNAME == "State Rte 128" | FULLNAME == "I- 495")
+
 
 detail_map <- ggplot() +
   geom_sf(data = state_tracts_class %>%
@@ -58,6 +61,8 @@ detail_map <- ggplot() +
             filter(upsai_cat_desc == "Rural"), aes(fill = rural_cat), lwd = 0.08, color = "white", show.legend = FALSE) +
   scale_fill_manual(values = rev(greens)) +
   geom_sf(data = state_counties, color = "gray10", lwd = 0.08, fill = NA) +
+  geom_sf(data = roads) +
   theme_void()
 
 ggsave("20-population/detailed_map.png", detail_map, dpi = 300, width = 12, height = 9)
+# vim: set ts=2 sw=2 et:
